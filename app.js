@@ -801,6 +801,37 @@ window.processOrder = async () => {
         const orderRef = await push(ref(db, `orders/${selectedDate}`), orderData);
         const orderId = orderRef.key;
         
+        // ================== KONEKSI KE SPREADSHEET (BARU) ==================
+        
+        // 1. URL Script Baru Anda (Yang ada Auto-Header)
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycaBWxwU8x9j6BZxYD-glCn-MGUbsAgifYdba8c-7TLTv58bdVCpFkwohrvN_mfa5z/exec";
+
+        // 2. Siapkan data yang rapi
+        const dataForSheet = {
+            date: orderData.date,      // Tanggal
+            time: orderData.time,      // Jam
+            customer: orderData.customer, // Nama Pelanggan
+            summary: orderData.summary,   // Pesanan
+            total: orderData.total,       // Total Harga
+            payment: orderData.payment,   // Pembayaran
+            cashier: userRole             // Kasir/Admin
+        };
+
+        // 3. Tembak ke Google Sheet
+        // Menggunakan mode 'no-cors' agar browser tidak memblokir
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataForSheet)
+        })
+        .then(() => console.log("✅ Data dikirim ke Spreadsheet"))
+        .catch(err => console.error("❌ Gagal kirim ke Spreadsheet:", err));
+
+        // ================== AKHIR KODE SPREADSHEET ==================
+        
         // Close loading
         await loadingSwal.close();
         
