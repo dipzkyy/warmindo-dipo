@@ -1,5 +1,5 @@
-const CACHE_NAME = 'warmindo-dipo-v2.1';
-const APP_VERSION = '2.1.0';
+const CACHE_NAME = 'warmindo-dipo-v3.0';
+const APP_VERSION = '3.0.0';
 
 // Assets to cache
 const ASSETS = [

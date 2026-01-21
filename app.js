@@ -4,7 +4,8 @@ import {
     ref, 
     push, 
     onValue, 
-    update
+    update,
+    remove
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
 // ==================== CONFIGURATION ====================
@@ -71,6 +72,7 @@ const INDOMIE_VARIANTS = [
 let cart = [];
 let userRole = '';
 let pendingOrders = 0;
+let selectedTransaksiDate = new Date().toISOString().split('T')[0];
 const today = new Date().toISOString().split('T')[0];
 
 // ==================== DOM READY ====================
@@ -90,9 +92,37 @@ function initDateInputs() {
     const transaksiInput = document.getElementById('tgl-transaksi');
     const laporanInput = document.getElementById('tgl-laporan');
     
-    if (transaksiInput) transaksiInput.value = today;
+    if (transaksiInput) {
+        transaksiInput.value = selectedTransaksiDate;
+        transaksiInput.addEventListener('change', function() {
+            selectedTransaksiDate = this.value;
+            updateDateDisplay();
+        });
+    }
+    
     if (laporanInput) laporanInput.value = today;
-    if (transaksiInput) transaksiInput.min = today;
+    updateDateDisplay();
+}
+
+function updateDateDisplay() {
+    const dateEl = document.getElementById('selected-date-display');
+    if (!dateEl) return;
+    
+    const dateObj = new Date(selectedTransaksiDate);
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    dateEl.textContent = dateObj.toLocaleDateString('id-ID', options);
+    
+    // Tambahkan indikator jika bukan hari ini
+    const todayBadge = document.getElementById('today-badge');
+    if (todayBadge) {
+        if (selectedTransaksiDate === today) {
+            todayBadge.textContent = 'HARI INI';
+            todayBadge.className = 'badge bg-success';
+        } else {
+            todayBadge.textContent = 'TANGGAL LAIN';
+            todayBadge.className = 'badge bg-warning text-dark';
+        }
+    }
 }
 
 function initClock() {
@@ -105,17 +135,19 @@ function initClock() {
             dateEl.textContent = now.toLocaleDateString('id-ID', { 
                 weekday: 'long', 
                 day: 'numeric', 
-                month: 'long' 
+                month: 'long',
+                year: 'numeric'
             });
             timeEl.textContent = now.toLocaleTimeString('id-ID', { 
                 hour: '2-digit', 
-                minute: '2-digit' 
+                minute: '2-digit',
+                second: '2-digit'
             });
         }
     }
     
     updateClock();
-    setInterval(updateClock, 60000);
+    setInterval(updateClock, 1000);
 }
 
 function renderIndomieVariants() {
@@ -123,7 +155,7 @@ function renderIndomieVariants() {
     if (!container) return;
     
     container.innerHTML = INDOMIE_VARIANTS.map(variant => `
-        <div class="col-6">
+        <div class="col-6 col-md-4">
             <button class="btn btn-outline-primary w-100 py-3 variant-btn" 
                     onclick="addIndomieVariant('${variant.name}')">
                 <div class="fs-3 mb-2">${variant.icon}</div>
@@ -150,6 +182,28 @@ function setupEventListeners() {
             if (e.key === 'Enter') window.processOrder();
         });
     }
+    
+    // Date picker untuk transaksi
+    const dateInput = document.getElementById('tgl-transaksi');
+    if (dateInput) {
+        dateInput.addEventListener('change', function() {
+            selectedTransaksiDate = this.value;
+            updateDateDisplay();
+        });
+    }
+    
+    // Quick date buttons
+    const quickDateButtons = document.querySelectorAll('.quick-date-btn');
+    quickDateButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const days = parseInt(this.dataset.days);
+            const date = new Date();
+            date.setDate(date.getDate() + days);
+            selectedTransaksiDate = date.toISOString().split('T')[0];
+            document.getElementById('tgl-transaksi').value = selectedTransaksiDate;
+            updateDateDisplay();
+        });
+    });
 }
 
 // ==================== AUTHENTICATION ====================
@@ -248,7 +302,12 @@ function renderMenu() {
         // Category Header
         container.innerHTML += `
             <div class="col-12">
-                <div class="menu-category">${category}</div>
+                <div class="menu-category">
+                    <i class="fas fa-folder-open me-2"></i>${category}
+                    <span class="badge bg-light text-dark ms-2">
+                        ${MENU_DATA.filter(item => item.cat === category).length} item
+                    </span>
+                </div>
             </div>
         `;
         
@@ -262,6 +321,7 @@ function renderMenu() {
                         <div class="menu-icon">${item.icon}</div>
                         <div class="menu-name">${item.name}</div>
                         <div class="menu-price">Rp ${item.price.toLocaleString('id-ID')}</div>
+                        ${item.hasVariant ? '<div class="menu-variant-badge"><i class="fas fa-list"></i> Varian</div>' : ''}
                         <div class="menu-add-btn">
                             <i class="fas fa-plus"></i>
                         </div>
@@ -317,27 +377,56 @@ window.addToCart = (name, price, icon = '📝') => {
     updateCartUI();
     
     // Visual feedback
-    Swal.fire({
-        icon: 'success',
-        title: 'Ditambahkan',
-        text: `${name} ke keranjang`,
-        toast: true,
-        position: 'bottom-end',
-        showConfirmButton: false,
-        timer: 1000
-    });
+    const toast = document.createElement('div');
+    toast.className = 'custom-toast';
+    toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <div class="toast-content">
+            <div class="toast-title">${name}</div>
+            <div class="toast-subtitle">Ditambahkan ke keranjang</div>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
 };
 
 window.removeFromCart = (index) => {
     if (index < 0 || index >= cart.length) return;
     
-    if (cart[index].quantity > 1) {
-        cart[index].quantity -= 1;
-        cart[index].total = cart[index].quantity * cart[index].price;
-    } else {
-        cart.splice(index, 1);
-    }
-    updateCartUI();
+    Swal.fire({
+        title: 'Hapus Item?',
+        text: `Apakah yakin menghapus ${cart[index].name}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            if (cart[index].quantity > 1) {
+                cart[index].quantity -= 1;
+                cart[index].total = cart[index].quantity * cart[index].price;
+            } else {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Dihapus',
+                text: 'Item telah dihapus dari keranjang',
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    });
 };
 
 window.resetCart = () => {
@@ -351,7 +440,8 @@ window.resetCart = () => {
         confirmButtonColor: '#dc3545',
         cancelButtonColor: '#6c757d',
         confirmButtonText: 'Ya, Kosongkan',
-        cancelButtonText: 'Batal'
+        cancelButtonText: 'Batal',
+        reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
             cart = [];
@@ -377,6 +467,7 @@ function updateCartUI() {
     const cartCount = document.getElementById('cart-count');
     const cartTotal = document.getElementById('cart-total');
     const cartItemsList = document.getElementById('cart-items-list');
+    const cartSubtotal = document.getElementById('cart-subtotal');
     
     if (!cartPanel || !cartCount || !cartTotal || !cartItemsList) return;
     
@@ -387,6 +478,9 @@ function updateCartUI() {
     // Update UI
     cartCount.textContent = totalItems;
     cartTotal.textContent = `Rp ${totalPrice.toLocaleString('id-ID')}`;
+    if (cartSubtotal) {
+        cartSubtotal.textContent = `Rp ${totalPrice.toLocaleString('id-ID')}`;
+    }
     
     // Show/hide cart panel
     if (totalItems > 0) {
@@ -394,19 +488,31 @@ function updateCartUI() {
         
         // Render cart items
         cartItemsList.innerHTML = cart.map((item, index) => `
-            <div class="cart-item">
+            <div class="cart-item" data-index="${index}">
                 <div class="d-flex align-items-center">
-                    <span class="me-2">${item.icon}</span>
-                    <div>
+                    <div class="cart-item-icon">${item.icon}</div>
+                    <div class="cart-item-details">
                         <div class="cart-item-name">${item.name}</div>
-                        <small class="text-muted">Rp ${item.price.toLocaleString('id-ID')} × ${item.quantity}</small>
+                        <div class="cart-item-meta">
+                            <span class="cart-item-price-unit">Rp ${item.price.toLocaleString('id-ID')}</span>
+                            <span class="cart-item-quantity">× ${item.quantity}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
                     <span class="cart-item-price">Rp ${item.total.toLocaleString('id-ID')}</span>
-                    <span class="cart-item-remove" onclick="removeFromCart(${index})">
-                        <i class="fas fa-times"></i>
-                    </span>
+                    <div class="cart-item-actions">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="decreaseQuantity(${index})">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span class="quantity-display">${item.quantity}</span>
+                        <button class="btn btn-sm btn-outline-primary" onclick="increaseQuantity(${index})">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -414,6 +520,24 @@ function updateCartUI() {
         cartPanel.classList.add('d-none');
     }
 }
+
+window.increaseQuantity = (index) => {
+    if (index < 0 || index >= cart.length) return;
+    cart[index].quantity += 1;
+    cart[index].total = cart[index].quantity * cart[index].price;
+    updateCartUI();
+};
+
+window.decreaseQuantity = (index) => {
+    if (index < 0 || index >= cart.length) return;
+    if (cart[index].quantity > 1) {
+        cart[index].quantity -= 1;
+        cart[index].total = cart[index].quantity * cart[index].price;
+        updateCartUI();
+    } else {
+        removeFromCart(index);
+    }
+};
 
 window.toggleCartDetail = () => {
     const details = document.getElementById('cart-details');
@@ -453,7 +577,7 @@ window.processOrder = async () => {
     
     const customerName = customerNameInput.value.trim();
     const paymentMethod = paymentMethodSelect.value;
-    const selectedDate = transaksiDateInput.value;
+    const selectedDate = selectedTransaksiDate;
     
     // Basic validation
     if (cart.length === 0) {
@@ -490,17 +614,19 @@ window.processOrder = async () => {
     const orderData = {
         customer: customerName,
         payment: paymentMethod,
-        items: JSON.parse(JSON.stringify(cart)), // Deep clone
+        items: JSON.parse(JSON.stringify(cart)),
         summary: itemsSummary,
         total: total,
         timestamp: Date.now(),
         date: selectedDate,
         time: new Date().toLocaleTimeString('id-ID', { 
             hour: '2-digit', 
-            minute: '2-digit' 
+            minute: '2-digit',
+            second: '2-digit'
         }),
-        status: 'pending',
-        processedBy: userRole
+        status: selectedDate === today ? 'pending' : 'done',
+        processedBy: userRole,
+        orderDate: new Date().toLocaleDateString('id-ID')
     };
     
     try {
@@ -515,18 +641,21 @@ window.processOrder = async () => {
             html: `
                 <div class="text-start">
                     <p><strong>Pelanggan:</strong> ${customerName}</p>
+                    <p><strong>Tanggal:</strong> ${new Date(selectedDate).toLocaleDateString('id-ID')}</p>
                     <p><strong>Total:</strong> Rp ${total.toLocaleString('id-ID')}</p>
                     <p><strong>ID Pesanan:</strong> ${orderId ? orderId.slice(-6) : 'N/A'}</p>
+                    <p><strong>Status:</strong> ${selectedDate === today ? 'Menunggu di dapur' : 'Arsip (tanggal lalu)'}</p>
                 </div>
             `,
             showCancelButton: true,
             confirmButtonText: '<i class="fab fa-whatsapp"></i> Kirim Nota',
             cancelButtonText: 'Tutup',
-            showCloseButton: true
+            showCloseButton: true,
+            reverseButtons: true
         });
         
         if (result.isConfirmed) {
-            sendWhatsAppNotification(customerName, itemsSummary, total, paymentMethod);
+            sendWhatsAppNotification(customerName, itemsSummary, total, paymentMethod, selectedDate);
         }
         
         // Reset and continue
@@ -551,13 +680,21 @@ window.processOrder = async () => {
     }
 };
 
-function sendWhatsAppNotification(customer, items, total, payment) {
+function sendWhatsAppNotification(customer, items, total, payment, date) {
+    const formattedDate = new Date(date).toLocaleDateString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
     const message = `*WARMINDO DIPO*%0A%0A`
         + `Halo *${customer}*,%0A`
         + `Pesanan Anda:%0A%0A`
         + `${items}%0A%0A`
         + `*Total: Rp ${total.toLocaleString('id-ID')}*%0A`
-        + `Metode: ${payment}%0A%0A`
+        + `Metode: ${payment}%0A`
+        + `Tanggal: ${formattedDate}%0A%0A`
         + `Terima kasih atas pesanannya! 🙏%0A`
         + `_Pesanan otomatis dikirim via sistem_`;
     
@@ -581,7 +718,7 @@ function listenKitchen() {
             container.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-check-circle"></i>
-                    <p>Tidak ada pesanan</p>
+                    <p>Tidak ada pesanan hari ini</p>
                 </div>
             `;
             countBadge.textContent = '0';
@@ -598,24 +735,37 @@ function listenKitchen() {
                 const orderHtml = `
                 <div class="kitchen-card">
                     <div class="kitchen-header">
-                        <div class="kitchen-customer">${order.customer}</div>
+                        <div class="d-flex align-items-center">
+                            <div class="kitchen-customer">${order.customer}</div>
+                            <div class="kitchen-id ms-2">#${key.slice(-6)}</div>
+                        </div>
                         <div class="kitchen-time">${order.time}</div>
                     </div>
                     
                     <ul class="kitchen-items">
                         ${Array.isArray(order.items) ? order.items.map(item => `
-                            <li>${item.icon || '🍽️'} ${item.name} ×${item.quantity || 1}</li>
+                            <li>
+                                <span class="kitchen-item-icon">${item.icon || '🍽️'}</span>
+                                <span class="kitchen-item-name">${item.name}</span>
+                                <span class="kitchen-item-quantity">×${item.quantity || 1}</span>
+                            </li>
                         `).join('') : ''}
                     </ul>
                     
                     <div class="kitchen-footer">
                         <div class="kitchen-payment">
-                            <i class="fas fa-wallet"></i> ${order.payment || 'Tunai'}
+                            <i class="fas fa-wallet me-1"></i> ${order.payment || 'Tunai'}
                         </div>
-                        <button onclick="finishOrder('${key}', '${order.customer}')" 
-                                class="btn btn-success btn-sm">
-                            <i class="fas fa-check me-1"></i>SELESAI
-                        </button>
+                        <div class="kitchen-actions">
+                            <button onclick="cancelOrder('${key}', '${order.customer}')" 
+                                    class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-times me-1"></i>BATAL
+                            </button>
+                            <button onclick="finishOrder('${key}', '${order.customer}')" 
+                                    class="btn btn-success btn-sm">
+                                <i class="fas fa-check me-1"></i>SELESAI
+                            </button>
+                        </div>
                     </div>
                 </div>
                 `;
@@ -648,24 +798,11 @@ function listenKitchen() {
 
 function playNotificationSound() {
     try {
-        // Create a simple notification sound
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = 800;
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.5);
+        const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
+        audio.volume = 0.3;
+        audio.play();
     } catch (e) {
-        console.log('Audio context not supported');
+        console.log('Audio not supported');
     }
 }
 
@@ -676,7 +813,8 @@ window.finishOrder = (orderId, customerName) => {
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Ya, Selesai',
-        cancelButtonText: 'Batal'
+        cancelButtonText: 'Batal',
+        reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
             update(ref(db, `orders/${today}/${orderId}`), { 
@@ -698,11 +836,39 @@ window.finishOrder = (orderId, customerName) => {
     });
 };
 
+window.cancelOrder = (orderId, customerName) => {
+    Swal.fire({
+        title: 'Batalkan Pesanan?',
+        html: `Pesanan <strong>${customerName}</strong> akan dibatalkan?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Batalkan',
+        cancelButtonText: 'Kembali',
+        confirmButtonColor: '#dc3545',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            remove(ref(db, `orders/${today}/${orderId}`)).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pesanan Dibatalkan',
+                    text: `Pesanan ${customerName} telah dibatalkan`,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            });
+        }
+    });
+};
+
 // ==================== REPORT SYSTEM ====================
 window.loadReport = () => {
     const tbody = document.getElementById('report-body');
     const omzetEl = document.getElementById('report-omzet');
     const countEl = document.getElementById('report-count');
+    const avgEl = document.getElementById('report-avg');
     
     if (!tbody || !omzetEl || !countEl) return;
     
@@ -714,7 +880,7 @@ window.loadReport = () => {
     // Show loading
     tbody.innerHTML = `
         <tr>
-            <td colspan="3" class="text-center py-4">
+            <td colspan="4" class="text-center py-4">
                 <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
                 <span class="ms-2">Memuat data...</span>
             </td>
@@ -730,13 +896,15 @@ window.loadReport = () => {
         if (!data) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="3" class="text-center py-4 text-muted">
-                        Tidak ada transaksi pada tanggal ini
+                    <td colspan="4" class="text-center py-4 text-muted">
+                        <i class="fas fa-inbox fa-2x mb-3 opacity-25"></i>
+                        <p>Tidak ada transaksi pada tanggal ini</p>
                     </td>
                 </tr>
             `;
             omzetEl.textContent = 'Rp 0';
             if (countEl) countEl.textContent = '0 transaksi';
+            if (avgEl) avgEl.textContent = 'Rp 0';
             return;
         }
         
@@ -751,25 +919,28 @@ window.loadReport = () => {
             totalOmzet += order.total || 0;
             
             const statusBadge = order.status === 'pending' 
-                ? '<span class="badge bg-warning">Pending</span>'
-                : '<span class="badge bg-success">Selesai</span>';
+                ? '<span class="badge bg-warning"><i class="fas fa-clock me-1"></i>Pending</span>'
+                : '<span class="badge bg-success"><i class="fas fa-check me-1"></i>Selesai</span>';
             
             tbody.innerHTML += `
                 <tr>
                     <td class="small">
-                        <div>${order.time || '-'}</div>
-                        <small class="text-muted">${statusBadge}</small>
+                        <div class="fw-bold">${order.time || '-'}</div>
+                        <small>${statusBadge}</small>
                     </td>
                     <td>
                         <div class="fw-bold">${order.customer || '-'}</div>
-                        <small class="text-muted d-block" style="font-size: 0.8rem;">
+                        <small class="text-muted d-block">
                             ${order.summary || '-'}
                         </small>
-                        <small class="text-muted d-block" style="font-size: 0.75rem;">
-                            ${order.payment || 'Tunai'}
-                        </small>
                     </td>
-                    <td class="text-end fw-bold">
+                    <td class="small">
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-${getPaymentIcon(order.payment)} me-1"></i>
+                            ${order.payment || 'Tunai'}
+                        </span>
+                    </td>
+                    <td class="text-end fw-bold text-primary">
                         Rp ${(order.total || 0).toLocaleString('id-ID')}
                     </td>
                 </tr>
@@ -777,10 +948,21 @@ window.loadReport = () => {
         });
         
         // Update summary
+        const average = transactionCount > 0 ? totalOmzet / transactionCount : 0;
         omzetEl.textContent = `Rp ${totalOmzet.toLocaleString('id-ID')}`;
         if (countEl) countEl.textContent = `${transactionCount} transaksi`;
+        if (avgEl) avgEl.textContent = `Rp ${Math.round(average).toLocaleString('id-ID')}`;
     });
 };
+
+function getPaymentIcon(paymentMethod) {
+    switch(paymentMethod) {
+        case 'QRIS': return 'qrcode';
+        case 'Transfer': return 'university';
+        case 'Kasbon': return 'file-invoice';
+        default: return 'money-bill';
+    }
+}
 
 window.exportPDF = () => {
     if (!window.jspdf) {
@@ -837,8 +1019,9 @@ window.exportPDF = () => {
             bodyStyles: { fontSize: 9 },
             columnStyles: {
                 0: { cellWidth: 25 },
-                1: { cellWidth: 110 },
-                2: { cellWidth: 25 }
+                1: { cellWidth: 80 },
+                2: { cellWidth: 35 },
+                3: { cellWidth: 30 }
             }
         });
         
@@ -954,7 +1137,30 @@ document.addEventListener('keydown', (e) => {
             if (modal) modal.hide();
         }
     }
+    
+    // F1 for help
+    if (e.key === 'F1') {
+        e.preventDefault();
+        showHelp();
+    }
 });
+
+function showHelp() {
+    Swal.fire({
+        title: 'Keyboard Shortcuts',
+        html: `
+            <div class="text-start">
+                <p><kbd>Ctrl+1</kbd> - Tab Kasir</p>
+                <p><kbd>Ctrl+2</kbd> - Tab Dapur</p>
+                <p><kbd>Ctrl+3</kbd> - Tab Laporan</p>
+                <p><kbd>Esc</kbd> - Tutup Modal</p>
+                <p><kbd>F1</kbd> - Bantuan ini</p>
+            </div>
+        `,
+        icon: 'info',
+        confirmButtonText: 'Mengerti'
+    });
+}
 
 // ==================== NETWORK DETECTION ====================
 window.addEventListener('online', () => {
@@ -1003,5 +1209,25 @@ window.addEventListener('error', (event) => {
     });
 });
 
+// ==================== UTILITY FUNCTIONS ====================
+window.showTransactionHistory = () => {
+    Swal.fire({
+        title: 'Riwayat Transaksi',
+        html: `
+            <div class="text-start">
+                <p>Sistem sekarang mendukung transaksi di tanggal mana saja:</p>
+                <ul>
+                    <li>Pilih tanggal di bagian atas tab Kasir</li>
+                    <li>Transaksi tanggal hari ini masuk ke antrian dapur</li>
+                    <li>Transaksi tanggal lain langsung masuk arsip</li>
+                    <li>Semua transaksi bisa dilihat di tab Laporan</li>
+                </ul>
+            </div>
+        `,
+        icon: 'info',
+        confirmButtonText: 'Mengerti'
+    });
+};
+
 // ==================== EXPORT GLOBALS ====================
-// These are already attached to window in their declarations
+window.selectedTransaksiDate = selectedTransaksiDate;

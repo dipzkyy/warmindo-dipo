@@ -9,6 +9,8 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2D6A4F">
     <link rel="icon" type="image/png" href="assets/dipo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -47,12 +49,13 @@
             
             <div class="mt-4 pt-3 border-top">
                 <small class="text-muted d-block">Kasir: <code>1234</code></small>
-                <small class="text-muted">Admin: <code>1337</code></small>
+                <small class="text-muted d-block">Admin: <code>1337</code></small>
+                <small class="text-muted">Owner: <code>9999</code></small>
             </div>
         </div>
         
         <div class="mt-5 text-center">
-            <small class="text-muted">v2.0 • © 2024 Warmindo Dipo</small>
+            <small class="text-muted">v3.0 • © 2024 Warmindo Dipo</small>
         </div>
     </div>
 
@@ -72,12 +75,15 @@
                         </div>
                     </div>
                     
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="time-display text-end">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="time-display text-end d-none d-md-block">
                             <div class="text-muted small" id="current-date"></div>
                             <div class="fw-bold text-dark" id="current-time"></div>
                         </div>
-                        <button onclick="logout()" class="btn btn-outline-danger btn-sm ms-3">
+                        <button onclick="showHelp()" class="btn btn-outline-info btn-sm" title="Bantuan (F1)">
+                            <i class="fas fa-question"></i>
+                        </button>
+                        <button onclick="logout()" class="btn btn-outline-danger btn-sm">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -108,14 +114,36 @@
             <div class="container">
                 <!-- Kasir View -->
                 <div id="view-kasir">
-                    <!-- Date Selector -->
+                    <!-- Date Selector - IMPROVED -->
                     <div class="date-selector card shadow-sm mb-4">
-                        <div class="card-body py-3">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-calendar-alt text-primary me-3"></i>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <small class="text-muted d-block">Tanggal Transaksi</small>
-                                    <input type="date" id="tgl-transaksi" class="date-input">
+                                    <h6 class="fw-bold mb-0" id="selected-date-display"></h6>
+                                    <span class="badge" id="today-badge"></span>
+                                </div>
+                                <button class="btn btn-sm btn-outline-info" onclick="showTransactionHistory()">
+                                    <i class="fas fa-info-circle me-1"></i>Info
+                                </button>
+                            </div>
+                            
+                            <div class="row g-2 mb-3">
+                                <div class="col">
+                                    <input type="date" id="tgl-transaksi" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-auto">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary quick-date-btn" data-days="-1">
+                                            <i class="fas fa-arrow-left me-1"></i>Kemarin
+                                        </button>
+                                        <button class="btn btn-outline-primary quick-date-btn" data-days="0">
+                                            Hari Ini
+                                        </button>
+                                        <button class="btn btn-outline-secondary quick-date-btn" data-days="1">
+                                            Besok<i class="fas fa-arrow-right ms-1"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -123,7 +151,7 @@
 
                     <!-- Search -->
                     <div class="search-box mb-4">
-                        <div class="input-group">
+                        <div class="input-group input-group-lg">
                             <span class="input-group-text bg-white border-end-0">
                                 <i class="fas fa-search text-muted"></i>
                             </span>
@@ -132,6 +160,9 @@
                                    id="search-menu" 
                                    placeholder="Cari menu (indomie, sosis, minuman...)"
                                    onkeyup="filterMenu()">
+                            <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('search-menu').value='';filterMenu()">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -141,45 +172,88 @@
 
                 <!-- Dapur View -->
                 <div id="view-dapur" class="d-none">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <h2 class="h5 fw-bold text-dark mb-1">Antrian Pesanan</h2>
-                            <small class="text-muted">Pesanan yang sedang diproses</small>
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h2 class="h5 fw-bold text-dark mb-1">Antrian Pesanan</h2>
+                                    <small class="text-muted">Pesanan yang sedang diproses hari ini</small>
+                                </div>
+                                <span class="badge bg-warning text-dark" id="pending-count">
+                                    <i class="fas fa-clock me-1"></i>0 menunggu
+                                </span>
+                            </div>
                         </div>
-                        <span class="badge bg-warning text-dark" id="pending-count">0 menunggu</span>
                     </div>
                     
                     <div id="kitchen-container">
                         <div class="empty-state text-center py-5">
                             <i class="fas fa-check-circle fa-3x text-success mb-3 opacity-50"></i>
-                            <p class="text-muted">Tidak ada pesanan</p>
+                            <p class="text-muted">Tidak ada pesanan hari ini</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Admin View -->
                 <div id="view-admin" class="d-none">
-                    <!-- Omzet Card -->
-                    <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-body text-center py-4">
-                            <small class="text-uppercase text-muted">Omzet Hari Ini</small>
-                            <h1 class="display-5 fw-bold text-primary my-2" id="report-omzet">Rp 0</h1>
-                            <small class="text-success" id="report-count">0 transaksi</small>
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body text-center py-4">
+                                    <div class="stat-icon text-primary mb-3">
+                                        <i class="fas fa-money-bill-wave fa-2x"></i>
+                                    </div>
+                                    <small class="text-uppercase text-muted d-block">Total Omzet</small>
+                                    <h2 class="display-6 fw-bold text-primary my-2" id="report-omzet">Rp 0</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body text-center py-4">
+                                    <div class="stat-icon text-success mb-3">
+                                        <i class="fas fa-receipt fa-2x"></i>
+                                    </div>
+                                    <small class="text-uppercase text-muted d-block">Jumlah Transaksi</small>
+                                    <h2 class="display-6 fw-bold text-success my-2" id="report-count">0</h2>
+                                    <small class="text-muted">transaksi</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body text-center py-4">
+                                    <div class="stat-icon text-info mb-3">
+                                        <i class="fas fa-calculator fa-2x"></i>
+                                    </div>
+                                    <small class="text-uppercase text-muted d-block">Rata-rata</small>
+                                    <h2 class="display-6 fw-bold text-info my-2" id="report-avg">Rp 0</h2>
+                                    <small class="text-muted">per transaksi</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Filter -->
                     <div class="card shadow-sm border-0 mb-4">
                         <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col">
-                                    <label class="form-label small text-muted">Pilih Tanggal</label>
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted">
+                                        <i class="fas fa-calendar-alt me-1"></i>Pilih Tanggal Laporan
+                                    </label>
                                     <input type="date" id="tgl-laporan" class="form-control" onchange="loadReport()">
                                 </div>
-                                <div class="col-auto d-flex align-items-end">
-                                    <button onclick="exportPDF()" class="btn btn-outline-dark">
-                                        <i class="fas fa-file-pdf me-2"></i>PDF
-                                    </button>
+                                <div class="col-md-6">
+                                    <div class="d-flex gap-2">
+                                        <button onclick="loadReport()" class="btn btn-primary flex-grow-1">
+                                            <i class="fas fa-sync-alt me-2"></i>Refresh Data
+                                        </button>
+                                        <button onclick="exportPDF()" class="btn btn-danger">
+                                            <i class="fas fa-file-pdf me-2"></i>Export PDF
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -187,13 +261,19 @@
 
                     <!-- Report Table -->
                     <div class="card shadow-sm border-0">
+                        <div class="card-header bg-white border-0">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-table me-2"></i>Detail Transaksi
+                            </h5>
+                        </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table table-hover mb-0" id="report-table">
                                     <thead class="table-light">
                                         <tr>
                                             <th class="small">Waktu</th>
-                                            <th class="small">Pesanan</th>
+                                            <th class="small">Pelanggan & Pesanan</th>
+                                            <th class="small">Pembayaran</th>
                                             <th class="small text-end">Total</th>
                                         </tr>
                                     </thead>
@@ -224,9 +304,33 @@
 
             <!-- Cart Details (Expandable) -->
             <div id="cart-details" class="cart-details d-none">
+                <!-- Date Info -->
+                <div class="alert alert-info mb-3 py-2">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        <div>
+                            <small class="d-block">Transaksi untuk:</small>
+                            <strong id="cart-date-display"></strong>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Items List -->
                 <div class="cart-items mb-3" id="cart-items-list">
                     <!-- Items will be rendered here -->
+                </div>
+
+                <!-- Summary -->
+                <div class="cart-summary-details mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Subtotal:</span>
+                        <span class="fw-bold" id="cart-subtotal">Rp 0</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Total:</span>
+                        <span class="fw-bold fs-5 text-primary" id="cart-final-total">Rp 0</span>
+                    </div>
                 </div>
 
                 <!-- Customer & Payment -->
@@ -237,32 +341,33 @@
                     <input type="text" 
                            id="cust-name" 
                            class="form-control" 
-                           placeholder="Contoh: Meja 1 / John"
+                           placeholder="Contoh: Meja 1 / John / Take Away"
                            autocomplete="off">
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="form-label small text-muted">
                         <i class="fas fa-credit-card me-1"></i>Metode Pembayaran
                     </label>
                     <select id="payment-method" class="form-select">
-                        <option value="Tunai">💵 Tunai</option>
-                        <option value="QRIS">📱 QRIS (Dana/GoPay)</option>
+                        <option value="Tunai">💵 Tunai (Cash)</option>
+                        <option value="QRIS">📱 QRIS (Dana/GoPay/OVO)</option>
                         <option value="Transfer">🏦 Transfer Bank</option>
-                        <option value="Kasbon">📒 Kasbon</option>
+                        <option value="Debit Card">💳 Kartu Debit</option>
+                        <option value="Kasbon">📒 Kasbon (Hutang)</option>
                     </select>
                 </div>
 
                 <!-- Actions -->
                 <div class="row g-2">
                     <div class="col">
-                        <button onclick="resetCart()" class="btn btn-outline-secondary w-100">
+                        <button onclick="resetCart()" class="btn btn-outline-danger w-100">
                             <i class="fas fa-trash-alt me-2"></i>Kosongkan
                         </button>
                     </div>
                     <div class="col">
-                        <button onclick="processOrder()" class="btn btn-primary w-100 py-3">
-                            <i class="fas fa-paper-plane me-2"></i>PROSES
+                        <button onclick="processOrder()" class="btn btn-primary w-100 py-3 fw-bold">
+                            <i class="fas fa-paper-plane me-2"></i>PROSES PESANAN
                         </button>
                     </div>
                 </div>
@@ -271,18 +376,23 @@
 
         <!-- Indomie Variant Modal -->
         <div class="modal fade" id="indomieModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header border-0">
+                    <div class="modal-header border-0 bg-primary text-white">
                         <h5 class="modal-title">
-                            <i class="fas fa-noodles me-2 text-warning"></i>Pilih Varian Indomie
+                            <i class="fas fa-noodles me-2"></i>Pilih Varian Indomie
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="row g-2" id="indomie-variants">
+                        <div class="row g-3" id="indomie-variants">
                             <!-- Variants will be loaded here -->
                         </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Tutup
+                        </button>
                     </div>
                 </div>
             </div>
