@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Warmindo Dipo PRO</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2D6A4F">
+    <link rel="icon" type="image/png" href="assets/dipo.png">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-light">
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="d-flex flex-column justify-content-center align-items-center min-vh-100">
+        <div class="login-card text-center p-5">
+            <div class="logo-container mb-4">
+                <img src="assets/dipo.png" width="100" class="logo-img">
+                <div class="logo-glow"></div>
+            </div>
+            
+            <h1 class="display-6 fw-bold text-primary mb-2">Warmindo Dipo</h1>
+            <p class="text-muted mb-4">Sistem Kasir Modern</p>
+            
+            <div class="form-floating mb-4">
+                <input type="password" 
+                       class="form-control form-control-lg text-center fw-bold" 
+                       id="login-pin" 
+                       placeholder="PIN"
+                       inputmode="numeric"
+                       autocomplete="off"
+                       onkeypress="if(event.key==='Enter')login()">
+                <label><i class="fas fa-lock me-2"></i>Masukkan PIN</label>
+            </div>
+            
+            <button onclick="login()" class="btn btn-primary btn-lg w-100 py-3 fw-bold">
+                <i class="fas fa-door-open me-2"></i>BUKA TOKO
+            </button>
+            
+            <div class="mt-4 pt-3 border-top">
+                <small class="text-muted d-block">Kasir: <code>1234</code></small>
+                <small class="text-muted">Admin: <code>1337</code></small>
+            </div>
+        </div>
+        
+        <div class="mt-5 text-center">
+            <small class="text-muted">v2.0 • © 2024 Warmindo Dipo</small>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app-container" class="d-none">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="app-logo me-3">
+                            <i class="fas fa-bowl-food text-primary"></i>
+                        </div>
+                        <div>
+                            <h1 class="h5 fw-bold mb-0 text-dark">Warmindo Dipo</h1>
+                            <small class="text-muted" id="role-display">Mode: Kasir</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="time-display text-end">
+                            <div class="text-muted small" id="current-date"></div>
+                            <div class="fw-bold text-dark" id="current-time"></div>
+                        </div>
+                        <button onclick="logout()" class="btn btn-outline-danger btn-sm ms-3">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="main-nav">
+            <div class="container">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" id="tab-kasir" onclick="switchTab('kasir')">
+                        <i class="fas fa-cash-register me-2"></i>Kasir
+                    </button>
+                    <button class="nav-tab" id="tab-dapur" onclick="switchTab('dapur')">
+                        <i class="fas fa-utensils me-2"></i>Dapur
+                        <span class="badge" id="kitchen-count">0</span>
+                    </button>
+                    <button class="nav-tab d-none" id="nav-admin" onclick="switchTab('admin')">
+                        <i class="fas fa-chart-line me-2"></i>Laporan
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <div class="container">
+                <!-- Kasir View -->
+                <div id="view-kasir">
+                    <!-- Date Selector -->
+                    <div class="date-selector card shadow-sm mb-4">
+                        <div class="card-body py-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar-alt text-primary me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Tanggal Transaksi</small>
+                                    <input type="date" id="tgl-transaksi" class="date-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="search-box mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control border-start-0" 
+                                   id="search-menu" 
+                                   placeholder="Cari menu (indomie, sosis, minuman...)"
+                                   onkeyup="filterMenu()">
+                        </div>
+                    </div>
+
+                    <!-- Menu Grid -->
+                    <div id="menu-container" class="row g-3 mb-5"></div>
+                </div>
+
+                <!-- Dapur View -->
+                <div id="view-dapur" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="h5 fw-bold text-dark mb-1">Antrian Pesanan</h2>
+                            <small class="text-muted">Pesanan yang sedang diproses</small>
+                        </div>
+                        <span class="badge bg-warning text-dark" id="pending-count">0 menunggu</span>
+                    </div>
+                    
+                    <div id="kitchen-container">
+                        <div class="empty-state text-center py-5">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3 opacity-50"></i>
+                            <p class="text-muted">Tidak ada pesanan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin View -->
+                <div id="view-admin" class="d-none">
+                    <!-- Omzet Card -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body text-center py-4">
+                            <small class="text-uppercase text-muted">Omzet Hari Ini</small>
+                            <h1 class="display-5 fw-bold text-primary my-2" id="report-omzet">Rp 0</h1>
+                            <small class="text-success" id="report-count">0 transaksi</small>
+                        </div>
+                    </div>
+
+                    <!-- Filter -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col">
+                                    <label class="form-label small text-muted">Pilih Tanggal</label>
+                                    <input type="date" id="tgl-laporan" class="form-control" onchange="loadReport()">
+                                </div>
+                                <div class="col-auto d-flex align-items-end">
+                                    <button onclick="exportPDF()" class="btn btn-outline-dark">
+                                        <i class="fas fa-file-pdf me-2"></i>PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Table -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" id="report-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="small">Waktu</th>
+                                            <th class="small">Pesanan</th>
+                                            <th class="small text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="report-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Cart Panel (Fixed Bottom) -->
+        <div id="cart-panel" class="cart-panel d-none">
+            <div class="cart-summary" onclick="toggleCartDetail()">
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-basket"></i>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </div>
+                <div class="cart-info">
+                    <div class="cart-label">Total Pesanan</div>
+                    <div class="cart-total" id="cart-total">Rp 0</div>
+                </div>
+                <div class="cart-toggle">
+                    <i class="fas fa-chevron-up" id="cart-arrow"></i>
+                </div>
+            </div>
+
+            <!-- Cart Details (Expandable) -->
+            <div id="cart-details" class="cart-details d-none">
+                <!-- Items List -->
+                <div class="cart-items mb-3" id="cart-items-list">
+                    <!-- Items will be rendered here -->
+                </div>
+
+                <!-- Customer & Payment -->
+                <div class="mb-3">
+                    <label class="form-label small text-muted">
+                        <i class="fas fa-user me-1"></i>Nama Pelanggan
+                    </label>
+                    <input type="text" 
+                           id="cust-name" 
+                           class="form-control" 
+                           placeholder="Contoh: Meja 1 / John"
+                           autocomplete="off">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted">
+                        <i class="fas fa-credit-card me-1"></i>Metode Pembayaran
+                    </label>
+                    <select id="payment-method" class="form-select">
+                        <option value="Tunai">💵 Tunai</option>
+                        <option value="QRIS">📱 QRIS (Dana/GoPay)</option>
+                        <option value="Transfer">🏦 Transfer Bank</option>
+                        <option value="Kasbon">📒 Kasbon</option>
+                    </select>
+                </div>
+
+                <!-- Actions -->
+                <div class="row g-2">
+                    <div class="col">
+                        <button onclick="resetCart()" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-trash-alt me-2"></i>Kosongkan
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button onclick="processOrder()" class="btn btn-primary w-100 py-3">
+                            <i class="fas fa-paper-plane me-2"></i>PROSES
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indomie Variant Modal -->
+        <div class="modal fade" id="indomieModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title">
+                            <i class="fas fa-noodles me-2 text-warning"></i>Pilih Varian Indomie
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-2" id="indomie-variants">
+                            <!-- Variants will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{
+  "name": "Warmindo Dipo PRO",
+  "short_name": "WDipo",
+  "description": "Sistem Kasir Modern untuk Warmindo Dipo",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2d6a4f",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "id-ID",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "food"],
+  "icons": [
+    {
+      "src": "assets/dipo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/dipo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Kasir Baru",
+      "short_name": "Kasir",
+      "description": "Buat transaksi baru",
+      "url": "./index.html?tab=kasir"
+    },
+    {
+      "name": "Lihat Dapur",
+      "short_name": "Dapur",
+      "description": "Monitor pesanan",
+      "url": "./index.html?tab=dapur"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
