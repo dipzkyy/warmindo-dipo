@@ -39,14 +39,6 @@
       "url": "./index.html?tab=dapur"
     }
   ],
-  "screenshots": [
-    {
-      "src": "assets/screenshot1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    }
-  ],
   "related_applications": [],
   "prefer_related_applications": false
 }

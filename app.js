@@ -27,45 +27,125 @@ const db = getDatabase(app);
 // ==================== DATA MODELS ====================
 const MENU_DATA = [
     // Makanan
-    { cat: 'Makanan', name: 'Indomie', price: 7000, icon: '🍜', hasVariant: true },
+    { 
+        cat: 'Makanan', 
+        name: 'Indomie', 
+        price: 7000, 
+        icon: '🍜', 
+        hasVariant: true,
+        color: 'warning' 
+    },
     
     // Topping
-    { cat: 'Topping', name: 'Sayur', price: 1000, icon: '🥬' },
-    { cat: 'Topping', name: 'Sosis', price: 2000, icon: '🌭' },
-    { cat: 'Topping', name: 'Nugget', price: 2000, icon: '🍗' },
-    { cat: 'Topping', name: 'Odeng', price: 2000, icon: '🍥' },
-    { cat: 'Topping', name: 'Telur', price: 3000, icon: '🥚' },
+    { cat: 'Topping', name: 'Sayur', price: 1000, icon: '🥬', color: 'success' },
+    { cat: 'Topping', name: 'Sosis', price: 2000, icon: '🌭', color: 'danger' },
+    { cat: 'Topping', name: 'Nugget', price: 2000, icon: '🍗', color: 'warning' },
+    { cat: 'Topping', name: 'Odeng', price: 2000, icon: '🍥', color: 'info' },
+    { cat: 'Topping', name: 'Telur', price: 3000, icon: '🥚', color: 'warning' },
     
     // Camilan
-    { cat: 'Camilan', name: 'Cireng Salju', price: 7000, icon: '🍘' },
-    { cat: 'Camilan', name: 'Cireng Suwir', price: 10000, icon: '🥟' },
-    { cat: 'Camilan', name: 'Jasuke', price: 10000, icon: '🌽' },
-    { cat: 'Camilan', name: 'French Fries', price: 10000, icon: '🍟' },
-    { cat: 'Camilan', name: 'Corndog Sosis', price: 10000, icon: '🌭' },
-    { cat: 'Camilan', name: 'Corndog Mozza', price: 12000, icon: '🧀' },
-    { cat: 'Camilan', name: 'Sosis Bakar', price: 12000, icon: '🍢' },
-    { cat: 'Camilan', name: 'Mix Platter', price: 15000, icon: '🍱' },
+    { cat: 'Camilan', name: 'Cireng Salju', price: 7000, icon: '🍘', color: 'light' },
+    { cat: 'Camilan', name: 'Cireng Suwir', price: 10000, icon: '🥟', color: 'success' },
+    { cat: 'Camilan', name: 'Jasuke', price: 10000, icon: '🌽', color: 'warning' },
+    { cat: 'Camilan', name: 'French Fries', price: 10000, icon: '🍟', color: 'danger' },
+    { cat: 'Camilan', name: 'Corndog Sosis', price: 10000, icon: '🌭', color: 'primary' },
+    { cat: 'Camilan', name: 'Corndog Mozza', price: 12000, icon: '🧀', color: 'info' },
+    { cat: 'Camilan', name: 'Sosis Bakar', price: 12000, icon: '🍢', color: 'danger' },
+    { cat: 'Camilan', name: 'Mix Platter', price: 15000, icon: '🍱', color: 'success' },
     
-    // Minuman
-    { cat: 'Minuman', name: 'Kopi Kapal Api', price: 4000, icon: '☕' },
-    { cat: 'Minuman', name: 'Kopi Berontoseno', price: 4000, icon: '☕' },
-    { cat: 'Minuman', name: 'MaxTea Teh Tarik', price: 5000, icon: '🧋' },
-    { cat: 'Minuman', name: 'MaxTea Lemon Tea', price: 5000, icon: '🍋' },
-    { cat: 'Minuman', name: 'Good Day Cappucino', price: 5000, icon: '🥤' },
-    { cat: 'Minuman', name: 'NutriSari Jeruk', price: 5000, icon: '🍊' },
-    { cat: 'Minuman', name: 'Susu Frisian Flag', price: 5000, icon: '🥛' },
-    { cat: 'Minuman', name: 'Milo / Hilo', price: 5000, icon: '🍫' },
-    { cat: 'Minuman', name: 'Es Batu / Extra', price: 1000, icon: '🧊' },
+    // Minuman (Kopi - tanpa opsi suhu)
+    { 
+        cat: 'Minuman', 
+        name: 'Kopi Kapal Api', 
+        price: 4000, 
+        icon: '☕', 
+        color: 'dark',
+        temp: null
+    },
+    { 
+        cat: 'Minuman', 
+        name: 'Kopi Berontoseno', 
+        price: 4000, 
+        icon: '☕', 
+        color: 'dark',
+        temp: null
+    },
+    
+    // Minuman dengan opsi panas/dingin
+    { 
+        cat: 'Minuman', 
+        name: 'MaxTea Teh Tarik', 
+        price: 5000, 
+        icon: '🧋', 
+        color: 'info',
+        temp: ['Panas', 'Dingin']
+    },
+    { 
+        cat: 'Minuman', 
+        name: 'MaxTea Lemon Tea', 
+        price: 5000, 
+        icon: '🍋', 
+        color: 'warning',
+        temp: ['Panas', 'Dingin']
+    },
+    { 
+        cat: 'Minuman', 
+        name: 'Good Day Cappucino', 
+        price: 5000, 
+        icon: '🥤', 
+        color: 'primary',
+        temp: ['Panas', 'Dingin']
+    },
+    { 
+        cat: 'Minuman', 
+        name: 'Nutrisari Jeruk Peras', 
+        price: 5000, 
+        icon: '🍊', 
+        color: 'warning',
+        temp: ['Panas', 'Dingin']
+    },
+    { 
+        cat: 'Minuman', 
+        name: 'Nutrisari Jeruk Nipis', 
+        price: 5000, 
+        icon: '🍋', 
+        color: 'success',
+        temp: ['Panas', 'Dingin']
+    },
+    { 
+        cat: 'Minuman', 
+        name: 'Nutrisari Jeruk Manis', 
+        price: 5000, 
+        icon: '🍊', 
+        color: 'warning',
+        temp: ['Panas', 'Dingin']
+    },
+    { 
+        cat: 'Minuman', 
+        name: 'Susu Frisian Flag', 
+        price: 5000, 
+        icon: '🥛', 
+        color: 'light',
+        temp: ['Panas', 'Dingin']
+    },
+    { 
+        cat: 'Minuman', 
+        name: 'Milo / Hilo', 
+        price: 5000, 
+        icon: '🍫', 
+        color: 'danger',
+        temp: ['Panas', 'Dingin']
+    },
 ];
 
 const INDOMIE_VARIANTS = [
-    { name: 'Kaldu Ayam', icon: '🍗' },
-    { name: 'Soto Special', icon: '🍜' },
-    { name: 'Mie Ayam Geprek', icon: '🌶️' },
-    { name: 'Seblak Hot Jeletot', icon: '🔥' },
-    { name: 'Nyemek Jogja', icon: '🏮' },
-    { name: 'Mie Goreng (Ori)', icon: '🍝' },
-    { name: 'Mie Rendang', icon: '🥘' }
+    { name: 'Kaldu Ayam', icon: '🍗', color: 'warning' },
+    { name: 'Soto Special', icon: '🍜', color: 'success' },
+    { name: 'Mie Ayam Geprek', icon: '🌶️', color: 'danger' },
+    { name: 'Seblak Hot Jeletot', icon: '🔥', color: 'danger' },
+    { name: 'Nyemek Jogja', icon: '🏮', color: 'primary' },
+    { name: 'Mie Goreng (Ori)', icon: '🍝', color: 'warning' },
+    { name: 'Mie Rendang', icon: '🥘', color: 'dark' }
 ];
 
 // ==================== GLOBAL STATE ====================
@@ -74,13 +154,22 @@ let userRole = '';
 let pendingOrders = 0;
 let selectedTransaksiDate = new Date().toISOString().split('T')[0];
 const today = new Date().toISOString().split('T')[0];
+let currentModalItem = null;
+let selectedTemperature = null;
+
+// Role names mapping
+const ROLE_NAMES = {
+    kasir: 'Kasir',
+    admin: 'Admin', 
+    owner: 'Owner'
+};
 
 // ==================== DOM READY ====================
 document.addEventListener('DOMContentLoaded', () => {
     initDateInputs();
     initClock();
-    renderIndomieVariants();
     setupEventListeners();
+    initCategories();
     
     // Auto-focus PIN input
     const pinInput = document.getElementById('login-pin');
@@ -150,19 +239,17 @@ function initClock() {
     setInterval(updateClock, 1000);
 }
 
-function renderIndomieVariants() {
-    const container = document.getElementById('indomie-variants');
+function initCategories() {
+    const categories = [...new Set(MENU_DATA.map(item => item.cat))];
+    const container = document.getElementById('category-tabs');
     if (!container) return;
     
-    container.innerHTML = INDOMIE_VARIANTS.map(variant => `
-        <div class="col-6 col-md-4">
-            <button class="btn btn-outline-primary w-100 py-3 variant-btn" 
-                    onclick="addIndomieVariant('${variant.name}')">
-                <div class="fs-3 mb-2">${variant.icon}</div>
-                <div class="small fw-bold">${variant.name}</div>
-                <div class="small text-muted">Rp 7,000</div>
-            </button>
-        </div>
+    container.innerHTML = categories.map((cat, index) => `
+        <button class="category-tab ${index === 0 ? 'active' : ''}" 
+                onclick="filterByCategory('${cat}')"
+                data-category="${cat}">
+            ${cat}
+        </button>
     `).join('');
 }
 
@@ -183,18 +270,8 @@ function setupEventListeners() {
         });
     }
     
-    // Date picker untuk transaksi
-    const dateInput = document.getElementById('tgl-transaksi');
-    if (dateInput) {
-        dateInput.addEventListener('change', function() {
-            selectedTransaksiDate = this.value;
-            updateDateDisplay();
-        });
-    }
-    
     // Quick date buttons
-    const quickDateButtons = document.querySelectorAll('.quick-date-btn');
-    quickDateButtons.forEach(btn => {
+    document.querySelectorAll('.quick-date-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const days = parseInt(this.dataset.days);
             const date = new Date();
@@ -202,6 +279,15 @@ function setupEventListeners() {
             selectedTransaksiDate = date.toISOString().split('T')[0];
             document.getElementById('tgl-transaksi').value = selectedTransaksiDate;
             updateDateDisplay();
+        });
+    });
+    
+    // Temperature selection
+    document.querySelectorAll('.temp-option').forEach(btn => {
+        btn.addEventListener('click', function() {
+            selectedTemperature = this.dataset.temp;
+            document.querySelectorAll('.temp-option').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
         });
     });
 }
@@ -224,13 +310,7 @@ window.login = () => {
             setRole('owner');
             break;
         default:
-            Swal.fire({
-                icon: 'error',
-                title: 'PIN Salah',
-                text: 'Periksa kembali PIN Anda',
-                showConfirmButton: false,
-                timer: 1500
-            });
+            showToast('error', 'PIN Salah', 'Periksa kembali PIN Anda');
             pinInput.value = '';
             pinInput.focus();
             break;
@@ -250,8 +330,8 @@ function setRole(role) {
     // Update role display
     const roleDisplay = document.getElementById('role-display');
     if (roleDisplay) {
-        const roleNames = { kasir: 'Kasir', admin: 'Administrator', owner: 'Owner' };
-        roleDisplay.textContent = `Mode: ${roleNames[role]}`;
+        roleDisplay.textContent = ROLE_NAMES[role];
+        roleDisplay.className = `badge bg-${role === 'owner' ? 'danger' : role === 'admin' ? 'warning' : 'success'}`;
     }
     
     // Initialize based on role
@@ -267,6 +347,7 @@ function setRole(role) {
     
     // Switch to kasir tab by default
     switchTab('kasir');
+    showToast('success', `Selamat datang, ${ROLE_NAMES[role]}!`, 'Aplikasi siap digunakan');
 };
 
 window.logout = () => {
@@ -277,7 +358,9 @@ window.logout = () => {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Ya, Keluar',
-            cancelButtonText: 'Batal'
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            backdrop: true
         }).then((result) => {
             if (result.isConfirmed) {
                 location.reload();
@@ -289,69 +372,155 @@ window.logout = () => {
 };
 
 // ==================== MENU SYSTEM ====================
-function renderMenu() {
+function renderMenu(category = null) {
     const container = document.getElementById('menu-container');
     if (!container) return;
     
     container.innerHTML = '';
     
-    // Group by category
-    const categories = [...new Set(MENU_DATA.map(item => item.cat))];
+    let itemsToRender = category ? 
+        MENU_DATA.filter(item => item.cat === category) : 
+        MENU_DATA;
     
-    categories.forEach(category => {
-        // Category Header
-        container.innerHTML += `
-            <div class="col-12">
-                <div class="menu-category">
-                    <i class="fas fa-folder-open me-2"></i>${category}
-                    <span class="badge bg-light text-dark ms-2">
-                        ${MENU_DATA.filter(item => item.cat === category).length} item
-                    </span>
-                </div>
+    if (itemsToRender.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Tidak ada item untuk kategori ini</p>
             </div>
         `;
+        return;
+    }
+    
+    itemsToRender.forEach(item => {
+        const hasOptions = item.hasVariant || (item.temp && item.temp.length > 0);
+        const optionsText = hasOptions ? 
+            (item.hasVariant ? '<span class="menu-badge">7 varian</span>' : 
+             '<span class="menu-badge">Panas/Dingin</span>') : '';
         
-        // Menu Items
-        MENU_DATA
-            .filter(item => item.cat === category)
-            .forEach(item => {
-                container.innerHTML += `
-                <div class="col-6 col-md-4 col-lg-3">
-                    <button class="menu-card" onclick="handleMenuClick(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                        <div class="menu-icon">${item.icon}</div>
-                        <div class="menu-name">${item.name}</div>
-                        <div class="menu-price">Rp ${item.price.toLocaleString('id-ID')}</div>
-                        ${item.hasVariant ? '<div class="menu-variant-badge"><i class="fas fa-list"></i> Varian</div>' : ''}
-                        <div class="menu-add-btn">
-                            <i class="fas fa-plus"></i>
-                        </div>
+        container.innerHTML += `
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="menu-card card border-0 shadow-sm h-100" 
+                 onclick="handleMenuClick(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                <div class="card-body text-center p-3">
+                    <div class="menu-icon bg-${item.color} bg-opacity-10 text-${item.color} rounded-circle mb-3 mx-auto">
+                        ${item.icon}
+                    </div>
+                    <h6 class="menu-name fw-bold mb-2">${item.name}</h6>
+                    ${optionsText}
+                    <div class="menu-price fw-bold text-primary mt-2">
+                        Rp ${item.price.toLocaleString('id-ID')}
+                    </div>
+                    <button class="btn btn-primary btn-sm mt-3 add-btn">
+                        <i class="fas fa-plus me-1"></i>Tambah
                     </button>
                 </div>
-                `;
-            });
+            </div>
+        </div>
+        `;
     });
 }
 
 window.handleMenuClick = (item) => {
+    currentModalItem = item;
+    
     if (item.hasVariant) {
-        const modalElement = document.getElementById('indomieModal');
-        if (modalElement) {
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
-        }
+        showIndomieModal();
+    } else if (item.temp && item.temp.length > 0) {
+        showTemperatureModal(item);
     } else {
         addToCart(item.name, item.price, item.icon);
     }
 };
 
-window.addIndomieVariant = (variantName) => {
-    const modalElement = document.getElementById('indomieModal');
-    if (modalElement) {
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        if (modal) modal.hide();
+function showIndomieModal() {
+    const modal = new bootstrap.Modal(document.getElementById('indomieModal'));
+    const container = document.getElementById('indomie-variants');
+    
+    container.innerHTML = INDOMIE_VARIANTS.map(variant => `
+        <div class="col-6 col-md-4">
+            <button class="btn btn-outline-${variant.color} w-100 h-100 p-3 variant-btn" 
+                    onclick="addIndomieVariant('${variant.name}', '${variant.icon}')">
+                <div class="fs-2 mb-2">${variant.icon}</div>
+                <div class="fw-bold">${variant.name}</div>
+                <small class="text-muted">Rp 7,000</small>
+            </button>
+        </div>
+    `).join('');
+    
+    modal.show();
+}
+
+function showTemperatureModal(item) {
+    const modal = new bootstrap.Modal(document.getElementById('temperatureModal'));
+    const title = document.getElementById('temperatureModalTitle');
+    const container = document.getElementById('temperature-options');
+    
+    title.textContent = item.name;
+    selectedTemperature = null;
+    
+    container.innerHTML = item.temp.map(temp => `
+        <div class="col-6">
+            <button class="btn btn-outline-primary w-100 h-100 p-4 temp-option" 
+                    data-temp="${temp}"
+                    onclick="selectTemperature('${temp}')">
+                <div class="fs-2 mb-2">${item.icon}</div>
+                <div class="fw-bold">${temp}</div>
+                <small class="text-muted">Rp ${item.price.toLocaleString('id-ID')}</small>
+            </button>
+        </div>
+    `).join('');
+    
+    // Reset temperature buttons
+    setTimeout(() => {
+        document.querySelectorAll('.temp-option').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.temp-option').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedTemperature = this.dataset.temp;
+            });
+        });
+    }, 100);
+    
+    modal.show();
+}
+
+window.selectTemperature = (temp) => {
+    selectedTemperature = temp;
+};
+
+window.addIndomieVariant = (variantName, icon) => {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('indomieModal'));
+    if (modal) modal.hide();
+    
+    addToCart(`Indomie ${variantName}`, 7000, icon);
+};
+
+window.confirmTemperature = () => {
+    if (!currentModalItem || !selectedTemperature) {
+        showToast('warning', 'Pilih Suhu', 'Silakan pilih suhu terlebih dahulu');
+        return;
     }
     
-    addToCart(`Indomie ${variantName}`, 7000, '🍜');
+    const modal = bootstrap.Modal.getInstance(document.getElementById('temperatureModal'));
+    if (modal) modal.hide();
+    
+    addToCart(`${currentModalItem.name} (${selectedTemperature})`, currentModalItem.price, currentModalItem.icon);
+    selectedTemperature = null;
+    currentModalItem = null;
+};
+
+window.filterByCategory = (category) => {
+    // Update active tab
+    document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.category === category);
+    });
+    
+    // Render menu for category
+    renderMenu(category);
+    
+    // Scroll to menu
+    document.getElementById('menu-container').scrollIntoView({ behavior: 'smooth' });
 };
 
 window.addToCart = (name, price, icon = '📝') => {
@@ -375,25 +544,17 @@ window.addToCart = (name, price, icon = '📝') => {
     }
     
     updateCartUI();
-    
-    // Visual feedback
-    const toast = document.createElement('div');
-    toast.className = 'custom-toast';
-    toast.innerHTML = `
-        <div class="toast-icon">${icon}</div>
-        <div class="toast-content">
-            <div class="toast-title">${name}</div>
-            <div class="toast-subtitle">Ditambahkan ke keranjang</div>
-        </div>
-    `;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 2000);
+    animateAddToCart();
+    showToast('success', 'Ditambahkan', `${name} ke keranjang`);
 };
+
+function animateAddToCart() {
+    const cartIcon = document.querySelector('.cart-icon i');
+    cartIcon.classList.add('animate__animated', 'animate__tada');
+    setTimeout(() => {
+        cartIcon.classList.remove('animate__animated', 'animate__tada');
+    }, 1000);
+}
 
 window.removeFromCart = (index) => {
     if (index < 0 || index >= cart.length) return;
@@ -405,7 +566,8 @@ window.removeFromCart = (index) => {
         showCancelButton: true,
         confirmButtonText: 'Ya, Hapus',
         cancelButtonText: 'Batal',
-        reverseButtons: true
+        reverseButtons: true,
+        backdrop: true
     }).then((result) => {
         if (result.isConfirmed) {
             if (cart[index].quantity > 1) {
@@ -415,16 +577,7 @@ window.removeFromCart = (index) => {
                 cart.splice(index, 1);
             }
             updateCartUI();
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'Dihapus',
-                text: 'Item telah dihapus dari keranjang',
-                toast: true,
-                position: 'bottom-end',
-                showConfirmButton: false,
-                timer: 1500
-            });
+            showToast('success', 'Dihapus', 'Item telah dihapus dari keranjang');
         }
     });
 };
@@ -441,23 +594,15 @@ window.resetCart = () => {
         cancelButtonColor: '#6c757d',
         confirmButtonText: 'Ya, Kosongkan',
         cancelButtonText: 'Batal',
-        reverseButtons: true
+        reverseButtons: true,
+        backdrop: true
     }).then((result) => {
         if (result.isConfirmed) {
             cart = [];
             const custNameInput = document.getElementById('cust-name');
             if (custNameInput) custNameInput.value = '';
             updateCartUI();
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'Dikosongkan',
-                text: 'Keranjang telah dikosongkan',
-                toast: true,
-                position: 'bottom-end',
-                showConfirmButton: false,
-                timer: 1500
-            });
+            showToast('success', 'Dikosongkan', 'Keranjang telah dikosongkan');
         }
     });
 };
@@ -466,8 +611,10 @@ function updateCartUI() {
     const cartPanel = document.getElementById('cart-panel');
     const cartCount = document.getElementById('cart-count');
     const cartTotal = document.getElementById('cart-total');
-    const cartItemsList = document.getElementById('cart-items-list');
     const cartSubtotal = document.getElementById('cart-subtotal');
+    const cartItemsList = document.getElementById('cart-items-list');
+    const cartDateDisplay = document.getElementById('cart-date-display');
+    const cartFinalTotal = document.getElementById('cart-final-total');
     
     if (!cartPanel || !cartCount || !cartTotal || !cartItemsList) return;
     
@@ -478,8 +625,23 @@ function updateCartUI() {
     // Update UI
     cartCount.textContent = totalItems;
     cartTotal.textContent = `Rp ${totalPrice.toLocaleString('id-ID')}`;
+    
     if (cartSubtotal) {
         cartSubtotal.textContent = `Rp ${totalPrice.toLocaleString('id-ID')}`;
+    }
+    
+    if (cartFinalTotal) {
+        cartFinalTotal.textContent = `Rp ${totalPrice.toLocaleString('id-ID')}`;
+    }
+    
+    if (cartDateDisplay) {
+        const dateObj = new Date(selectedTransaksiDate);
+        cartDateDisplay.textContent = dateObj.toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
     }
     
     // Show/hide cart panel
@@ -488,28 +650,29 @@ function updateCartUI() {
         
         // Render cart items
         cartItemsList.innerHTML = cart.map((item, index) => `
-            <div class="cart-item" data-index="${index}">
+            <div class="cart-item d-flex justify-content-between align-items-center p-3 bg-white rounded-3 mb-2 shadow-sm">
                 <div class="d-flex align-items-center">
-                    <div class="cart-item-icon">${item.icon}</div>
-                    <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-meta">
-                            <span class="cart-item-price-unit">Rp ${item.price.toLocaleString('id-ID')}</span>
-                            <span class="cart-item-quantity">× ${item.quantity}</span>
-                        </div>
+                    <div class="cart-item-icon fs-4 me-3">${item.icon}</div>
+                    <div>
+                        <div class="cart-item-name fw-bold">${item.name}</div>
+                        <small class="text-muted">Rp ${item.price.toLocaleString('id-ID')} × ${item.quantity}</small>
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <span class="cart-item-price">Rp ${item.total.toLocaleString('id-ID')}</span>
-                    <div class="cart-item-actions">
-                        <button class="btn btn-sm btn-outline-secondary" onclick="decreaseQuantity(${index})">
+                    <span class="cart-item-price fw-bold text-primary">
+                        Rp ${item.total.toLocaleString('id-ID')}
+                    </span>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary" onclick="updateQuantity(${index}, -1)">
                             <i class="fas fa-minus"></i>
                         </button>
-                        <span class="quantity-display">${item.quantity}</span>
-                        <button class="btn btn-sm btn-outline-primary" onclick="increaseQuantity(${index})">
+                        <button class="btn btn-outline-secondary px-3" disabled>
+                            ${item.quantity}
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="updateQuantity(${index}, 1)">
                             <i class="fas fa-plus"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${index})">
+                        <button class="btn btn-outline-danger" onclick="removeFromCart(${index})">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -521,36 +684,38 @@ function updateCartUI() {
     }
 }
 
-window.increaseQuantity = (index) => {
+window.updateQuantity = (index, change) => {
     if (index < 0 || index >= cart.length) return;
-    cart[index].quantity += 1;
-    cart[index].total = cart[index].quantity * cart[index].price;
-    updateCartUI();
-};
-
-window.decreaseQuantity = (index) => {
-    if (index < 0 || index >= cart.length) return;
-    if (cart[index].quantity > 1) {
-        cart[index].quantity -= 1;
-        cart[index].total = cart[index].quantity * cart[index].price;
-        updateCartUI();
-    } else {
+    
+    const newQuantity = cart[index].quantity + change;
+    
+    if (newQuantity < 1) {
         removeFromCart(index);
+    } else {
+        cart[index].quantity = newQuantity;
+        cart[index].total = newQuantity * cart[index].price;
+        updateCartUI();
     }
 };
 
 window.toggleCartDetail = () => {
     const details = document.getElementById('cart-details');
     const arrow = document.getElementById('cart-arrow');
+    const cartPanel = document.getElementById('cart-panel');
     
     if (details && arrow) {
         details.classList.toggle('d-none');
         arrow.classList.toggle('fa-chevron-up');
         arrow.classList.toggle('fa-chevron-down');
+        
+        // Adjust cart panel height
+        if (cartPanel) {
+            cartPanel.style.maxHeight = details.classList.contains('d-none') ? '80px' : '400px';
+        }
     }
 };
 
-window.filterMenu = () => {
+window.searchMenu = () => {
     const searchInput = document.getElementById('search-menu');
     if (!searchInput) return;
     
@@ -561,7 +726,12 @@ window.filterMenu = () => {
         const parent = card.closest('.col-6, .col-md-4, .col-lg-3');
         
         if (parent) {
-            parent.style.display = (query === '' || cardText.includes(query)) ? 'block' : 'none';
+            if (query === '' || cardText.includes(query)) {
+                parent.style.display = 'block';
+                card.classList.add('animate__animated', 'animate__fadeIn');
+            } else {
+                parent.style.display = 'none';
+            }
         }
     });
 };
@@ -571,9 +741,8 @@ window.processOrder = async () => {
     // Validation
     const customerNameInput = document.getElementById('cust-name');
     const paymentMethodSelect = document.getElementById('payment-method');
-    const transaksiDateInput = document.getElementById('tgl-transaksi');
     
-    if (!customerNameInput || !paymentMethodSelect || !transaksiDateInput) return;
+    if (!customerNameInput || !paymentMethodSelect) return;
     
     const customerName = customerNameInput.value.trim();
     const paymentMethod = paymentMethodSelect.value;
@@ -581,24 +750,12 @@ window.processOrder = async () => {
     
     // Basic validation
     if (cart.length === 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Keranjang Kosong',
-            text: 'Tambahkan item terlebih dahulu',
-            showConfirmButton: false,
-            timer: 1500
-        });
+        showToast('warning', 'Keranjang Kosong', 'Tambahkan item terlebih dahulu');
         return;
     }
     
     if (!customerName) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Nama Pelanggan',
-            text: 'Harap isi nama pelanggan',
-            showConfirmButton: false,
-            timer: 1500
-        });
+        showToast('warning', 'Nama Pelanggan', 'Harap isi nama pelanggan');
         customerNameInput.focus();
         return;
     }
@@ -630,9 +787,22 @@ window.processOrder = async () => {
     };
     
     try {
+        // Show loading
+        const loadingSwal = Swal.fire({
+            title: 'Memproses Pesanan...',
+            text: 'Mohon tunggu sebentar',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
         // Save to Firebase
         const orderRef = await push(ref(db, `orders/${selectedDate}`), orderData);
         const orderId = orderRef.key;
+        
+        // Close loading
+        await loadingSwal.close();
         
         // Success notification
         const result = await Swal.fire({
@@ -648,10 +818,11 @@ window.processOrder = async () => {
                 </div>
             `,
             showCancelButton: true,
-            confirmButtonText: '<i class="fab fa-whatsapp"></i> Kirim Nota',
+            confirmButtonText: '<i class="fab fa-whatsapp me-2"></i>Kirim Nota',
             cancelButtonText: 'Tutup',
             showCloseButton: true,
-            reverseButtons: true
+            reverseButtons: true,
+            backdrop: true
         });
         
         if (result.isConfirmed) {
@@ -670,13 +841,7 @@ window.processOrder = async () => {
         
     } catch (error) {
         console.error('Order Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal Memproses',
-            text: 'Terjadi kesalahan saat menyimpan pesanan',
-            showConfirmButton: false,
-            timer: 2000
-        });
+        showToast('error', 'Gagal Memproses', 'Terjadi kesalahan saat menyimpan pesanan');
     }
 };
 
@@ -716,9 +881,9 @@ function listenKitchen() {
         
         if (!data) {
             container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-check-circle"></i>
-                    <p>Tidak ada pesanan hari ini</p>
+                <div class="empty-state text-center py-5">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3 opacity-50"></i>
+                    <p class="text-muted">Tidak ada pesanan hari ini</p>
                 </div>
             `;
             countBadge.textContent = '0';
@@ -733,38 +898,47 @@ function listenKitchen() {
                 pendingCount++;
                 
                 const orderHtml = `
-                <div class="kitchen-card">
-                    <div class="kitchen-header">
-                        <div class="d-flex align-items-center">
-                            <div class="kitchen-customer">${order.customer}</div>
-                            <div class="kitchen-id ms-2">#${key.slice(-6)}</div>
+                <div class="kitchen-card card border-0 shadow-sm mb-3 animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1">${order.customer}</h5>
+                                <small class="text-muted">ID: ${key.slice(-6)}</small>
+                            </div>
+                            <span class="badge bg-warning">${order.time}</span>
                         </div>
-                        <div class="kitchen-time">${order.time}</div>
-                    </div>
-                    
-                    <ul class="kitchen-items">
-                        ${Array.isArray(order.items) ? order.items.map(item => `
-                            <li>
-                                <span class="kitchen-item-icon">${item.icon || '🍽️'}</span>
-                                <span class="kitchen-item-name">${item.name}</span>
-                                <span class="kitchen-item-quantity">×${item.quantity || 1}</span>
-                            </li>
-                        `).join('') : ''}
-                    </ul>
-                    
-                    <div class="kitchen-footer">
-                        <div class="kitchen-payment">
-                            <i class="fas fa-wallet me-1"></i> ${order.payment || 'Tunai'}
+                        
+                        <div class="mb-3">
+                            ${Array.isArray(order.items) ? order.items.map(item => `
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">${item.icon || '🍽️'}</span>
+                                        <span>${item.name}</span>
+                                    </div>
+                                    <span class="badge bg-light text-dark">×${item.quantity || 1}</span>
+                                </div>
+                            `).join('') : ''}
                         </div>
-                        <div class="kitchen-actions">
-                            <button onclick="cancelOrder('${key}', '${order.customer}')" 
-                                    class="btn btn-outline-danger btn-sm">
-                                <i class="fas fa-times me-1"></i>BATAL
-                            </button>
-                            <button onclick="finishOrder('${key}', '${order.customer}')" 
-                                    class="btn btn-success btn-sm">
-                                <i class="fas fa-check me-1"></i>SELESAI
-                            </button>
+                        
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <div>
+                                <span class="badge bg-light text-dark">
+                                    <i class="fas fa-wallet me-1"></i>${order.payment || 'Tunai'}
+                                </span>
+                                <span class="badge bg-light text-dark ms-2">
+                                    <i class="fas fa-money-bill me-1"></i>Rp ${order.total.toLocaleString('id-ID')}
+                                </span>
+                            </div>
+                            <div>
+                                <button onclick="cancelOrder('${key}', '${order.customer}')" 
+                                        class="btn btn-outline-danger btn-sm me-2">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <button onclick="finishOrder('${key}', '${order.customer}')" 
+                                        class="btn btn-success btn-sm">
+                                    <i class="fas fa-check me-1"></i>Selesai
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -781,15 +955,16 @@ function listenKitchen() {
         // Play sound if new order
         if (pendingCount > pendingOrders) {
             playNotificationSound();
+            showToast('info', 'Pesanan Baru!', 'Ada pesanan baru masuk ke dapur');
         }
         pendingOrders = pendingCount;
         
         // Show empty state if no pending orders
         if (pendingCount === 0) {
             container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-check-circle"></i>
-                    <p>Semua pesanan selesai</p>
+                <div class="empty-state text-center py-5">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3 opacity-50"></i>
+                    <p class="text-muted">Semua pesanan selesai</p>
                 </div>
             `;
         }
@@ -800,7 +975,7 @@ function playNotificationSound() {
     try {
         const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
         audio.volume = 0.3;
-        audio.play();
+        audio.play().catch(e => console.log('Audio play failed:', e));
     } catch (e) {
         console.log('Audio not supported');
     }
@@ -814,7 +989,8 @@ window.finishOrder = (orderId, customerName) => {
         showCancelButton: true,
         confirmButtonText: 'Ya, Selesai',
         cancelButtonText: 'Batal',
-        reverseButtons: true
+        reverseButtons: true,
+        backdrop: true
     }).then((result) => {
         if (result.isConfirmed) {
             update(ref(db, `orders/${today}/${orderId}`), { 
@@ -822,15 +998,7 @@ window.finishOrder = (orderId, customerName) => {
                 finishedAt: new Date().toLocaleTimeString('id-ID'),
                 finishedBy: userRole
             }).then(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Pesanan Selesai',
-                    text: `Pesanan ${customerName} sudah siap`,
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+                showToast('success', 'Pesanan Selesai', `Pesanan ${customerName} sudah siap`);
             });
         }
     });
@@ -845,19 +1013,12 @@ window.cancelOrder = (orderId, customerName) => {
         confirmButtonText: 'Ya, Batalkan',
         cancelButtonText: 'Kembali',
         confirmButtonColor: '#dc3545',
-        reverseButtons: true
+        reverseButtons: true,
+        backdrop: true
     }).then((result) => {
         if (result.isConfirmed) {
             remove(ref(db, `orders/${today}/${orderId}`)).then(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Pesanan Dibatalkan',
-                    text: `Pesanan ${customerName} telah dibatalkan`,
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+                showToast('success', 'Pesanan Dibatalkan', `Pesanan ${customerName} telah dibatalkan`);
             });
         }
     });
@@ -923,10 +1084,10 @@ window.loadReport = () => {
                 : '<span class="badge bg-success"><i class="fas fa-check me-1"></i>Selesai</span>';
             
             tbody.innerHTML += `
-                <tr>
+                <tr class="animate__animated animate__fadeIn">
                     <td class="small">
                         <div class="fw-bold">${order.time || '-'}</div>
-                        <small>${statusBadge}</small>
+                        <div>${statusBadge}</div>
                     </td>
                     <td>
                         <div class="fw-bold">${order.customer || '-'}</div>
@@ -936,8 +1097,7 @@ window.loadReport = () => {
                     </td>
                     <td class="small">
                         <span class="badge bg-light text-dark">
-                            <i class="fas fa-${getPaymentIcon(order.payment)} me-1"></i>
-                            ${order.payment || 'Tunai'}
+                            ${getPaymentIcon(order.payment)} ${order.payment || 'Tunai'}
                         </span>
                     </td>
                     <td class="text-end fw-bold text-primary">
@@ -957,22 +1117,16 @@ window.loadReport = () => {
 
 function getPaymentIcon(paymentMethod) {
     switch(paymentMethod) {
-        case 'QRIS': return 'qrcode';
-        case 'Transfer': return 'university';
-        case 'Kasbon': return 'file-invoice';
-        default: return 'money-bill';
+        case 'QRIS': return '📱';
+        case 'Transfer': return '🏦';
+        case 'Kasbon': return '📒';
+        default: return '💵';
     }
 }
 
 window.exportPDF = () => {
     if (!window.jspdf) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'PDF library tidak tersedia',
-            showConfirmButton: false,
-            timer: 1500
-        });
+        showToast('error', 'PDF Error', 'PDF library tidak tersedia');
         return;
     }
     
@@ -990,31 +1144,33 @@ window.exportPDF = () => {
             day: 'numeric'
         });
         
-        // Header
+        // Header with logo
+        doc.setFillColor(45, 106, 79);
+        doc.rect(0, 0, 210, 30, 'F');
+        doc.setTextColor(255, 255, 255);
         doc.setFontSize(20);
-        doc.setTextColor(45, 106, 79);
         doc.text('WARMINDO DIPO', 105, 15, { align: 'center' });
         
         doc.setFontSize(12);
-        doc.setTextColor(100, 116, 139);
         doc.text('Laporan Penjualan', 105, 25, { align: 'center' });
         
+        doc.setTextColor(0, 0, 0);
         doc.setFontSize(10);
-        doc.text(formattedDate, 105, 32, { align: 'center' });
+        doc.text(formattedDate, 105, 35, { align: 'center' });
         
         // Line separator
         doc.setDrawColor(226, 232, 240);
-        doc.line(20, 38, 190, 38);
+        doc.line(20, 42, 190, 42);
         
         // AutoTable
         doc.autoTable({
             html: '#report-table',
-            startY: 45,
+            startY: 50,
             theme: 'grid',
             headStyles: { 
                 fillColor: [45, 106, 79],
                 textColor: 255,
-                fontSize: 9
+                fontSize: 10
             },
             bodyStyles: { fontSize: 9 },
             columnStyles: {
@@ -1042,25 +1198,11 @@ window.exportPDF = () => {
         // Save
         doc.save(`Laporan_Warmindo_${date.replace(/-/g, '')}.pdf`);
         
-        Swal.fire({
-            icon: 'success',
-            title: 'PDF Berhasil',
-            text: 'Laporan telah diexport',
-            toast: true,
-            position: 'bottom-end',
-            showConfirmButton: false,
-            timer: 1500
-        });
+        showToast('success', 'PDF Berhasil', 'Laporan telah diexport');
         
     } catch (error) {
         console.error('PDF Export Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Export Gagal',
-            text: 'Terjadi kesalahan saat membuat PDF',
-            showConfirmButton: false,
-            timer: 2000
-        });
+        showToast('error', 'Export Gagal', 'Terjadi kesalahan saat membuat PDF');
     }
 };
 
@@ -1097,8 +1239,49 @@ window.switchTab = (tabName) => {
         case 'admin':
             loadReport();
             break;
-        // kasir doesn't need special action
+        case 'kasir':
+            renderMenu();
+            break;
     }
+};
+
+// ==================== UTILITY FUNCTIONS ====================
+function showToast(icon, title, text) {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+    });
+    
+    Toast.fire({
+        icon: icon,
+        title: title,
+        text: text
+    });
+}
+
+window.showHelp = () => {
+    Swal.fire({
+        title: 'Keyboard Shortcuts',
+        html: `
+            <div class="text-start">
+                <p><kbd>Ctrl+1</kbd> - Tab Kasir</p>
+                <p><kbd>Ctrl+2</kbd> - Tab Dapur</p>
+                <p><kbd>Ctrl+3</kbd> - Tab Laporan</p>
+                <p><kbd>Esc</kbd> - Tutup Modal</p>
+                <p><kbd>F1</kbd> - Bantuan ini</p>
+            </div>
+        `,
+        icon: 'info',
+        confirmButtonText: 'Mengerti',
+        backdrop: true
+    });
 };
 
 // ==================== SERVICE WORKER ====================
@@ -1131,9 +1314,15 @@ document.addEventListener('keydown', (e) => {
     
     // Escape to close modal
     if (e.key === 'Escape') {
-        const modalElement = document.getElementById('indomieModal');
-        if (modalElement) {
-            const modal = bootstrap.Modal.getInstance(modalElement);
+        const indomieModal = document.getElementById('indomieModal');
+        if (indomieModal) {
+            const modal = bootstrap.Modal.getInstance(indomieModal);
+            if (modal) modal.hide();
+        }
+        
+        const tempModal = document.getElementById('temperatureModal');
+        if (tempModal) {
+            const modal = bootstrap.Modal.getInstance(tempModal);
             if (modal) modal.hide();
         }
     }
@@ -1145,46 +1334,13 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-function showHelp() {
-    Swal.fire({
-        title: 'Keyboard Shortcuts',
-        html: `
-            <div class="text-start">
-                <p><kbd>Ctrl+1</kbd> - Tab Kasir</p>
-                <p><kbd>Ctrl+2</kbd> - Tab Dapur</p>
-                <p><kbd>Ctrl+3</kbd> - Tab Laporan</p>
-                <p><kbd>Esc</kbd> - Tutup Modal</p>
-                <p><kbd>F1</kbd> - Bantuan ini</p>
-            </div>
-        `,
-        icon: 'info',
-        confirmButtonText: 'Mengerti'
-    });
-}
-
 // ==================== NETWORK DETECTION ====================
 window.addEventListener('online', () => {
-    Swal.fire({
-        icon: 'success',
-        title: 'Koneksi Pulih',
-        text: 'Aplikasi kembali online',
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 2000
-    });
+    showToast('success', 'Koneksi Pulih', 'Aplikasi kembali online');
 });
 
 window.addEventListener('offline', () => {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Koneksi Terputus',
-        text: 'Bekerja dalam mode offline',
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-    });
+    showToast('warning', 'Koneksi Terputus', 'Bekerja dalam mode offline');
 });
 
 // ==================== ERROR HANDLING ====================
@@ -1201,7 +1357,8 @@ window.addEventListener('error', (event) => {
         text: 'Silakan refresh halaman atau coba lagi nanti',
         showConfirmButton: true,
         confirmButtonText: 'Refresh',
-        allowOutsideClick: false
+        allowOutsideClick: false,
+        backdrop: true
     }).then((result) => {
         if (result.isConfirmed) {
             location.reload();
@@ -1209,25 +1366,18 @@ window.addEventListener('error', (event) => {
     });
 });
 
-// ==================== UTILITY FUNCTIONS ====================
-window.showTransactionHistory = () => {
-    Swal.fire({
-        title: 'Riwayat Transaksi',
-        html: `
-            <div class="text-start">
-                <p>Sistem sekarang mendukung transaksi di tanggal mana saja:</p>
-                <ul>
-                    <li>Pilih tanggal di bagian atas tab Kasir</li>
-                    <li>Transaksi tanggal hari ini masuk ke antrian dapur</li>
-                    <li>Transaksi tanggal lain langsung masuk arsip</li>
-                    <li>Semua transaksi bisa dilihat di tab Laporan</li>
-                </ul>
-            </div>
-        `,
-        icon: 'info',
-        confirmButtonText: 'Mengerti'
-    });
-};
+// ==================== ANIMATIONS ====================
+function animateElement(elementId, animation) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.classList.add('animate__animated', `animate__${animation}`);
+        setTimeout(() => {
+            element.classList.remove('animate__animated', `animate__${animation}`);
+        }, 1000);
+    }
+}
 
-// ==================== EXPORT GLOBALS ====================
-window.selectedTransaksiDate = selectedTransaksiDate;
+// Initialize on load
+window.onload = () => {
+    console.log('Warmindo Dipo PRO v4.0 loaded');
+};
